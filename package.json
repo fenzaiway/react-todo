@@ -1,0 +1,28 @@
+{
+  "name": "react-ele",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "element-react": "^1.4.16",
+    "element-theme-default": "^1.4.13",
+    "less": "^3.0.2",
+    "less-loader": "^4.1.0",
+    "react": "^16.3.2",
+    "react-app-rewire-less": "^2.1.1",
+    "react-dom": "^16.3.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^8.4.1",
+    "postcss": "^6.0.22",
+    "postcss-flexbugs-fixes": "^3.3.1",
+    "postcss-loader": "^2.1.4",
+    "react-app-rewired": "^1.5.2",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

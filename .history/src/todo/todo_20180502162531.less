@@ -1,0 +1,36 @@
+.todo{
+    ul, li, label{
+        margin: 0px;
+        padding: 0px;
+    }
+    position: relative;
+    margin: 0 auto;
+    margin-top: 100px;
+    width: 80%;
+    height: 300px;
+    border: 1px solid #eee;
+
+    text-align: left;
+    
+    .todo-list{
+        height: 75%;
+        overflow-y: auto;
+        list-style: none;
+        margin: 10px;
+        
+        li{
+            height: 40px;
+            line-height: 40px;
+        }
+
+        li.del {
+            text-decoration: line-through;
+        }
+
+        
+    }
+    .list-detail{
+        position: absolute;
+        bottom: 0px;
+    }
+}
