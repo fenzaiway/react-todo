@@ -18,7 +18,7 @@ class TodoItem extends Component{
                     checked={this.props.item.status}
                     onChange={this.selectItem.bind(this,this.props.index)}
                 />
-                {this.props.item.name} <Button onClick={this.removeItem.bind(this, this.props.index)} type="primary" icon="delete"></Button>
+                {this.props.item.text} <Button onClick={this.removeItem.bind(this, this.props.index)} type="primary" icon="delete"></Button>
             </li>
         )
     }

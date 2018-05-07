@@ -1,10 +1,21 @@
 import React, { Component } from 'react';
 
 import {Input, Message, Checkbox} from 'element-react'
-
+import {connect} from 'react-redux'
 import './todo.less'
 
+import {
+ ADD_TODO,
+ DEL_TODO,
+ COM_ALL_TODO,
+ COM_TODO,
+ LIST_TODO,
+ GET_COM_TODO
+} from '../actions/todo'
+
+
 import TodoItem from './todoItem.js'
+
 
 class TodoApp extends Component {
 
@@ -13,8 +24,7 @@ class TodoApp extends Component {
 
         this.state = {
             checkAll: false,
-            val:'',
-            todos : JSON.parse(localStorage.getItem('__nicup_item__') || '[]')
+            val:''
         }
     }
 
@@ -27,15 +37,10 @@ class TodoApp extends Component {
             return
         }
 
-        let todos = this.getTodos()
-        todos.push({
-            name: val,
-            status: false
-        })
+        this.props.addTodo(val)
 
         this.setState({
-            val: '',
-            todos
+            val: ''
         })
         
     }
@@ -49,61 +54,27 @@ class TodoApp extends Component {
         e.keyCode === 13 && this.addItem()
     }
 
-    getTodos(){
-        localStorage.setItem('__nicup_item__', JSON.stringify(this.state.todos))
-        return this.state.todos
-    }
-
-    removeItem = (index)=>{
-        let todos = this.getTodos()
-        todos.splice(index, 1)
-        this.setState({todos})
-    }
-
-    selectItem = (index)=>{
-        let todos = this.getTodos()
-        todos = todos.map((item, i) =>{
-            if(i === index){
-                item.status = !item.status
-            }
-            return item
-        })
-
-        this.setState({todos})
-    }
-
     isCheckAll = ()=>{
-        let todos = this.getTodos()
+        let todos = this.props.todos
         let allCheck = todos.filter(item=>item.status===true)
         return (allCheck.length === todos.length && todos.length !== 0) || this.setState.checkAll
     }
 
     getComplectedLength = ()=>{
-        let arr = this.getTodos().filter(item=>{
+        let arr = this.props.todos.filter(item=>{
             return item.status === true
         })
         return arr.length
     }
 
     checkAllHandler = ()=>{
-        this.setState({checkAll: !this.state.checkAll})
-        let todos = null
-        if(!this.state.checkAll){
-            todos = this.getTodos().map(item=>{
-                item.status = true
-                return item
-            })
-        }else{
-            todos = this.getTodos().map(item=>{
-                item.status = false
-                return item
-            })
-        }
-
-        this.setState({todos})
+        this.props.comAllTodo(!this.isCheckAll())
     }
 
     render(){
+
+        let {todos, delTodo, comTodo} = this.props
+        localStorage.setItem('__nicup_item__', JSON.stringify(todos))
         return (
             <div className="todo">
                 <Input 
@@ -114,13 +85,13 @@ class TodoApp extends Component {
                     placeholder="请输入内容" icon="plus" />
                 <ul className="todo-list">
                     {
-                        this.state.todos.map((item, index)=>{
+                        todos.map((item, index)=>{
                             return (
                                 <TodoItem 
                                     key={index} 
                                     item={item} 
-                                    selectItem={this.selectItem}
-                                    removeItem={this.removeItem}
+                                    selectItem={comTodo}
+                                    removeItem={delTodo}
                                     index={index} />
                             )
                         })
@@ -132,7 +103,7 @@ class TodoApp extends Component {
                     checked={this.isCheckAll()}
                     onChange={this.checkAllHandler}
                 >全选</Checkbox>
-                    total:{this.state.todos.length}， complected:{this.getComplectedLength()}
+                    total:{todos.length}， complected:{this.getComplectedLength()}
                 </div>
 
             </div>
@@ -140,4 +111,38 @@ class TodoApp extends Component {
     }
 }
 
-export default TodoApp
+const mapStateToProps = (state) => {
+    return {
+        todos: state.todos
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addTodo: text => {
+            dispatch({type:ADD_TODO, text})
+        },
+        delTodo: index=>{
+            dispatch({type: DEL_TODO, index})
+        },
+        comTodo:index=>{
+            dispatch({
+                type: COM_TODO,
+                index
+            })
+        },
+        comAllTodo:status=>{
+            dispatch({
+                type: COM_ALL_TODO,
+                status
+            })
+        },
+        getComTodo:()=>{
+            dispatch({
+                type: GET_COM_TODO
+            })
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoApp)
