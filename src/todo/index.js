@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import {Input, Message, Checkbox} from 'element-react'
 import {connect} from 'react-redux'
+import Constants from '../lib/constants'
 import './todo.less'
 
 import {
@@ -10,8 +11,9 @@ import {
  COM_ALL_TODO,
  COM_TODO,
  LIST_TODO,
- GET_COM_TODO
-} from '../actions/todo'
+ GET_COM_TODO,
+ INIT_TODO
+} from '../redux/actions/todo'
 
 
 import TodoItem from './todoItem.js'
@@ -28,6 +30,26 @@ class TodoApp extends Component {
         }
     }
 
+    componentDidMount(){
+        let tout = setInterval(()=>{
+            let todoListQuery = this.props.todoListQuery
+            if(todoListQuery) {
+                clearInterval(tout)
+                this.listTodo(todoListQuery)
+            }
+        },10)
+        
+    }
+
+    listTodo(todoListQuery){
+        todoListQuery.descending('createdAt').find().then(resp=>{
+            let todos = resp.map(item=>{
+                return item.attributes
+            })
+            this.props.initTodo(todos)
+        })
+    }
+
     addItem = ()=>{
         
         let val = this.state.val
@@ -37,12 +59,18 @@ class TodoApp extends Component {
             return
         }
 
-        this.props.addTodo(val)
-
-        this.setState({
-            val: ''
+        let todoListObj = this.props.todoListObj
+        todoListObj.set('todoText', val)
+        todoListObj.set('complete', false)
+        todoListObj.save().then(resp=>{
+            this.props.addTodo(val)
+            this.setState({
+                val: ''
+            })
+        }, err=>{
+            console.error(err)
         })
-        
+
     }
 
     valChange = (val)=>{
@@ -72,7 +100,6 @@ class TodoApp extends Component {
     }
 
     render(){
-
         let {todos, delTodo, comTodo} = this.props
         localStorage.setItem('__nicup_item__', JSON.stringify(todos))
         return (
@@ -113,12 +140,20 @@ class TodoApp extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        todos: state.todos
+        todos: state.todos,
+        todoListQuery: state.bmob.query[Constants.bmob.TODO],
+        todoListObj: state.bmob.obj[Constants.bmob.TODO]
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        initTodo: todos=>{
+            dispatch({
+                type: INIT_TODO,
+                todos
+            })
+        },
         addTodo: text => {
             dispatch({type:ADD_TODO, text})
         },

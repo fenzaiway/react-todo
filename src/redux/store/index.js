@@ -1,4 +1,4 @@
-import {applyMiddleware, createStore} from 'redux'
+import {applyMiddleware, createStore, compose} from 'redux'
 import thunk from 'redux-thunk'
 
 import reducers from '../reducers/index'
@@ -7,9 +7,10 @@ import * as actionCreators from '../actions/todo'
 export default (initState = {}) =>{
     let middleWare = applyMiddleware(thunk)
 
-    const store  = createStore(reducers, initState, /*middleWare,*/
-        //redux调试代码
-        window.devToolsExtension && window.devToolsExtension({ actionCreators })
+    const store  = createStore(
+                            reducers, 
+                            initState, 
+                            compose(middleWare, window.devToolsExtension && window.devToolsExtension({ actionCreators }))
     )
 
     //热加载,及时跟新reducer

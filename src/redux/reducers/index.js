@@ -1,7 +1,9 @@
 import {combineReducers} from 'redux'
 
-import todoReducer from './todo'
+import todos from './todo'
+import bmob from './bmob'
 
 export default combineReducers({
-    todos:todoReducer
+    todos,
+    bmob
 })
